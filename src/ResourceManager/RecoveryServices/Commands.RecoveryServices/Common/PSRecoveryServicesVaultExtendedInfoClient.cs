@@ -75,7 +75,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices
         /// <param name="managementCert">certificate to be uploaded</param>
         /// <param name="vault">vault object</param>
         /// <returns>credential object</returns>
-        public ASRVaultCreds GenerateVaultCredential(X509Certificate2 managementCert, ARSVault vault, ASRSite site)
+        public ASRVaultCreds GenerateVaultCredential(X509Certificate2 managementCert, ARSVault vault, ASRSite site,string authType)
         {
             ASRVaultCreds currentVaultContext = PSRecoveryServicesClient.arsVaultCreds;
 
@@ -105,7 +105,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices
             // upload certificate and fetch of ACIK can be made parallel to improvve the performace.
 
             // Upload certificate
-            VaultCertificateResponse uploadCertificate = this.UpdateVaultCertificate(managementCert);
+            VaultCertificateResponse uploadCertificate = this.UpdateVaultCertificate(managementCert,authType);
 
             channelIntegrityKey = getChannelIntegrityKey;
 
@@ -120,6 +120,33 @@ namespace Microsoft.Azure.Commands.RecoveryServices
             Utilities.UpdateCurrentVaultContext(currentVaultContext);
 
             return arsVaultCreds;
+        }
+
+        public string GetChannelIntegrityKey(ARSVault vault)
+        {
+            ASRVaultCreds currentVaultContext = PSRecoveryServicesClient.arsVaultCreds;
+
+            string resourceProviderNamespace = string.Empty;
+            string resourceType = string.Empty;
+
+            Utilities.GetResourceProviderNamespaceAndType(vault.ID, out resourceProviderNamespace, out resourceType);
+
+            Logger.Instance.WriteDebug(string.Format(
+                "GenerateVaultCredential resourceProviderNamespace = {0}, resourceType = {1}",
+                resourceProviderNamespace,
+                resourceType));
+
+            // Update vault settings with the working vault to generate file
+            Utilities.UpdateCurrentVaultContext(new ASRVaultCreds()
+            {
+                ResourceGroupName = vault.ResourceGroupName,
+                ResourceName = vault.Name,
+                ResourceNamespace = resourceProviderNamespace,
+                ARMResourceType = resourceType
+            });
+
+            // Get Channel Integrity key
+             return this.GetChannelIntegrityKey();
         }
 
         /// <summary>
@@ -182,12 +209,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices
         /// </summary>
         /// <param name="cert">certificate object </param>
         /// <returns>Upload Certificate Response</returns>
-        private VaultCertificateResponse UpdateVaultCertificate(X509Certificate2 cert)
+        private VaultCertificateResponse UpdateVaultCertificate(X509Certificate2 cert,String authType)
         {
             var certificateArgs = new CertificateRequest();
             certificateArgs.Properties = new RawCertificateData();
             certificateArgs.Properties.Certificate = cert.GetRawCertData();
-            certificateArgs.Properties.AuthType = AuthType.ACS;
+            certificateArgs.Properties.AuthType = authType;
 
             VaultCertificateResponse response = this.UpdateVaultCertificate(certificateArgs, cert.FriendlyName);
 

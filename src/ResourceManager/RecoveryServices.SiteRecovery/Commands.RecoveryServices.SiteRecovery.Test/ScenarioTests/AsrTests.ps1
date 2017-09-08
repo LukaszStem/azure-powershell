@@ -484,3 +484,40 @@ function Test-SiteRecoveryNewModelE2ETest
 	$Policy = Get-AzureRmRecoveryServicesAsrPolicy | Where-Object {$_.Name -eq $PolicyName}
 	Assert-Null($Policy)
 }
+
+<#
+.SYNOPSIS
+Site Recovery New model End to End
+#>
+function Test-VerifyAuth
+{
+	param([string] $DowloadFolder,
+			[string] $DownloadFilePath)
+
+	$VaultName = "IbizaV2ATest"
+    $rgName = "canaryexproute"
+	$Vault = Get-AzureRMRecoveryServicesVault -ResourceGroupName $rgName -Name $VaultName
+
+	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DownloadFilePath -Vault $Vault
+	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
+	
+	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Vault $Vault
+	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
+	
+	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Vault $Vault -Auth "ACS"
+	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
+	
+	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Vault $Vault -Auth "AAD" 
+	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
+	
+	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Auth "ACS" -SiteRecovery -Vault $Vault
+	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
+	
+	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Auth "AAD"-SiteRecovery -Vault $Vault
+	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
+	
+	Set-ASRVaultSettings -Vault $Vault
+	Set-AzureRmRecoveryServicesAsrVaultSettings -Vault $Vault -Auth "AAD"
+	Set-AzureRmRecoveryServicesAsrVaultSettings -Vault $Vault -Auth "ACS"
+	
+}

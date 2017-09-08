@@ -24,12 +24,13 @@ using Microsoft.Azure.Commands.Common.Authentication;
 using Microsoft.Azure.Management.Internal.Resources;
 using Microsoft.Azure.Management.RecoveryServices;
 using Microsoft.Azure.Management.RecoveryServices.SiteRecovery;
-using Microsoft.Azure.Portal.RecoveryServices.Models.Common;
 using Microsoft.Azure.Test;
 using Microsoft.Azure.Test.HttpRecorder;
 using Microsoft.WindowsAzure.Commands.ScenarioTest;
 using Microsoft.WindowsAzure.Commands.Test.Utilities.Common;
 using RestTestFramework = Microsoft.Rest.ClientRuntime.Azure.TestFramework;
+using Microsoft.Azure.Management.RecoveryServices.Models;
+using Microsoft.Azure.Portal.RecoveryServices.Models.Common;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery.Test.ScenarioTests
 {
@@ -44,20 +45,43 @@ namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery.Test.ScenarioTe
         {
             this.vaultSettingsFilePath = Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
-                "ScenarioTests\\vaultSettings.VaultCredentials");
+                "ScenarioTests\\vaultSettings2.VaultCredentials");
 
             if (File.Exists(this.vaultSettingsFilePath))
             {
                 try
-                {
-                    var serializer1 = new DataContractSerializer(typeof(ASRVaultCreds));
-                    using (var s = new FileStream(
-                        this.vaultSettingsFilePath,
-                        FileMode.Open,
-                        FileAccess.Read,
-                        FileShare.Read))
+                {  
+                    if (File.ReadAllText(this.vaultSettingsFilePath).ToLower().Contains("<asrvaultcreds"))
                     {
-                        this.asrVaultCreds = (ASRVaultCreds)serializer1.ReadObject(s);
+                        var serializer1 = new DataContractSerializer(typeof(ASRVaultCreds));
+                        using (var s = new FileStream(
+                            this.vaultSettingsFilePath,
+                            FileMode.Open,
+                            FileAccess.Read,
+                            FileShare.Read))
+                        {
+                            this.asrVaultCreds = (ASRVaultCreds)serializer1.ReadObject(s);
+                        }
+                    }
+                    else
+                    {
+                        var serializer = new DataContractSerializer(typeof(RSVaultAsrCreds));
+                        using (var s = new FileStream(
+                            this.vaultSettingsFilePath,
+                            FileMode.Open,
+                            FileAccess.Read,
+                            FileShare.Read))
+                        {
+                            RSVaultAsrCreds aadCreds = (RSVaultAsrCreds)serializer.ReadObject(s);
+                            asrVaultCreds = new ASRVaultCreds();
+                            asrVaultCreds.ChannelIntegrityKey = aadCreds.ChannelIntegrityKey;
+                            asrVaultCreds.ResourceGroupName = aadCreds.VaultDetails.ResourceGroup;
+                            asrVaultCreds.Version = "2.0";
+                            asrVaultCreds.SiteId = aadCreds.SiteId;
+                            asrVaultCreds.SiteName = aadCreds.SiteName;
+                            asrVaultCreds.ResourceNamespace = aadCreds.VaultDetails.ProviderNamespace;
+                            asrVaultCreds.ARMResourceType = aadCreds.VaultDetails.ResourceType;
+                        }
                     }
                 }
                 catch (XmlException xmlException)
@@ -276,5 +300,5 @@ namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery.Test.ScenarioTe
         {
             return true;
         }
-    }
+    }  
 }
