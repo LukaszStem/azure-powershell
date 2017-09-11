@@ -219,7 +219,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices
                     // Upload cert into ID Mgmt
                     WriteDebug(string.Format(CultureInfo.InvariantCulture, Resources.UploadingCertToIdmgmt));
                     vaultCertificateResponse = UploadCert(cert);
-                    WriteDebug(string.Format(CultureInfo.InvariantCulture, Resources.UploadedCertToIdmgmt));
+                    WriteDebug(string.Format(CultureInfo.InvariantCulture, Resources.UploadedCertToIdmgmt)) ;
 
                     // generate vault credentials
                     string vaultCredsFileContent = GenerateVaultCredsForSiteRecovery(cert, subscription.Id, vaultCertificateResponse, site);
@@ -228,7 +228,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices
                     //       to DPM servers. 
                     //       We found a bug in the DPM UI which is looking for a particular namespace in the input file.
                     //       The below is a hack to circumvent this issue and this would be removed once the bug can be fixed.
-                    vaultCredsFileContent = vaultCredsFileContent.Replace("Microsoft.Azure.Commands.RecoveryServices.SiteRecovery.Models",
+                    vaultCredsFileContent = vaultCredsFileContent.Replace(
+                        "Microsoft.Azure.Commands.RecoveryServices.SiteRecovery.Models",
                         "Microsoft.Azure.Portal.RecoveryServices.Models.Common");
                     WriteDebug(string.Format(Resources.SavingVaultCred, fullFilePath));
 
