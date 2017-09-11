@@ -16,12 +16,12 @@ Gets the Azure Site Recovery vault settings file.
 ### ForSite
 ```
 Get-AzureRmRecoveryServicesVaultSettingsFile [-Vault] <ARSVault> -SiteIdentifier <String>
- -SiteFriendlyName <String> [[-Path] <String>] [-Auth <String>] [-SiteRecovery] [<CommonParameters>]
+ -SiteFriendlyName <String> [[-Path] <String>] [-UseACSAuthentication] [-SiteRecovery] [<CommonParameters>]
 ```
 
 ### ByDefault
 ```
-Get-AzureRmRecoveryServicesVaultSettingsFile [-Vault] <ARSVault> [[-Path] <String>] [-Auth <String>]
+Get-AzureRmRecoveryServicesVaultSettingsFile [-Vault] <ARSVault> [[-Path] <String>] [-UseACSAuthentication]
  [-SiteRecovery] [<CommonParameters>]
 ```
 
@@ -151,11 +151,11 @@ Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
-### -Auth
-Autherization type used for getting vaultFile (Possible Value ACS,AAD).
+### -UseACSAuthentication
+Switch Parameter to use ACS authentication.
 
 ```yaml
-Type: String
+Type: SwitchParameter
 Parameter Sets: ForSite, ByDefault
 Aliases: 
 

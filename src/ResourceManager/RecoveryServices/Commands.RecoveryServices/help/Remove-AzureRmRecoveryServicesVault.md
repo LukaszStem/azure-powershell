@@ -22,10 +22,12 @@ The **Remove-AzureRmRecoveryServicesVault** cmdlet deletes a Recovery Services v
 
 ## EXAMPLES
 
-### 1:
+### Example 1
+```
+PS C:\> Remove-AzureRmRecoveryServicesVault -Vault $vault
 ```
 
-```
+Deletes a Recovery Services vault.
 
 ## PARAMETERS
 

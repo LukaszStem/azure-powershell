@@ -22,10 +22,12 @@ The **Get-AzureRmRecoveryServicesVault** cmdlet gets a list of Recovery Services
 
 ## EXAMPLES
 
-### 1:
+### Example 1
+```
+PS C:\> Get-AzureRmRecoveryServicesBackupProperty -Vault $vault
 ```
 
-```
+Get the backup vault property for vault.
 
 ## PARAMETERS
 

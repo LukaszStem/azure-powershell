@@ -23,10 +23,12 @@ The **New-AzureRmRecoveryServicesVault** cmdlet creates a new Recovery Services 
 
 ## EXAMPLES
 
-### 1:
+### Example 1
+```
+PS C:\> Get-AzureRmRecoveryServicesBackupProperty -Vault $vault
 ```
 
-```
+Get the backup vault property for vault.
 
 ## PARAMETERS
 

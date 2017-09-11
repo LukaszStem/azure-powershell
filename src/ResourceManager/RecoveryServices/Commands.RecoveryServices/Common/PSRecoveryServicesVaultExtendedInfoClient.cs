@@ -75,7 +75,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices
         /// <param name="managementCert">certificate to be uploaded</param>
         /// <param name="vault">vault object</param>
         /// <returns>credential object</returns>
-        public ASRVaultCreds GenerateVaultCredential(X509Certificate2 managementCert, ARSVault vault, ASRSite site,string authType)
+        public ASRVaultCreds GenerateVaultCredential(
+            X509Certificate2 managementCert,
+            ARSVault vault,
+            ASRSite site,
+            string authType)
         {
             ASRVaultCreds currentVaultContext = PSRecoveryServicesClient.arsVaultCreds;
 
@@ -105,16 +109,18 @@ namespace Microsoft.Azure.Commands.RecoveryServices
             // upload certificate and fetch of ACIK can be made parallel to improvve the performace.
 
             // Upload certificate
-            VaultCertificateResponse uploadCertificate = this.UpdateVaultCertificate(managementCert,authType);
+            VaultCertificateResponse uploadCertificate = this.UpdateVaultCertificate(
+                managementCert,
+                authType);
 
             channelIntegrityKey = getChannelIntegrityKey;
 
             ASRVaultCreds arsVaultCreds = this.GenerateCredentialObject(
-                                                managementCert,
-                                                uploadCertificate,
-                                                channelIntegrityKey,
-                                                vault,
-                                                site);
+                managementCert,
+                uploadCertificate,
+                channelIntegrityKey,
+                vault,
+                site);
 
             // Update back the original vault settings
             Utilities.UpdateCurrentVaultContext(currentVaultContext);

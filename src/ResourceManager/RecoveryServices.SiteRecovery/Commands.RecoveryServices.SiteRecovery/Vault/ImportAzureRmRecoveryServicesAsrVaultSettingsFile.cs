@@ -65,11 +65,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery
                     {
                         if (File.ReadAllText(this.Path).ToLower().Contains("<asrvaultcreds"))
                         {
-                            asrVaultCreds = readAcsASRVaultCreds();
+                            asrVaultCreds = ReadAcsASRVaultCreds();
                         }
                         else
                         {
-                            asrVaultCreds = readAadASRVaultCreds();
+                            asrVaultCreds = ReadAadASRVaultCreds();
                         }
                     }
                     catch (XmlException xmlException)
@@ -119,7 +119,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery
             }
         }
 
-        private ASRVaultCreds readAcsASRVaultCreds()
+        private ASRVaultCreds ReadAcsASRVaultCreds()
         {
             ASRVaultCreds asrVaultCreds;
             var serializer = new DataContractSerializer(typeof(ASRVaultCreds));
@@ -134,7 +134,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery
             return asrVaultCreds;
         }
 
-        private ASRVaultCreds readAadASRVaultCreds()
+        private ASRVaultCreds ReadAadASRVaultCreds()
         {
             ASRVaultCreds asrVaultCreds;
             var serializer = new DataContractSerializer(typeof(RSVaultAsrCreds));

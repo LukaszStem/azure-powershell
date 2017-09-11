@@ -14,6 +14,7 @@
 
 using System;
 using System.Management.Automation;
+using System.Collections.ObjectModel;
 using Microsoft.Azure.Management.RecoveryServices.Models;
 using Microsoft.Azure.Commands.RecoveryServices.SiteRecovery.Properties;
 
@@ -41,18 +42,23 @@ namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery
             ParameterSetName = ASRParameterSets.ARSVault,
             Mandatory = true,
             ValueFromPipeline = true)]
+        [Parameter(
+            ParameterSetName = ASRParameterSets.ARSVaultACS,
+            Mandatory = true,
+            ValueFromPipeline = true)]
         [ValidateNotNullOrEmpty]
         public ARSVault Vault { get; set; }
 
         /// <summary>
-        ///     Gets or sets ARS vault Object.
+        /// Gets or sets Authentication type.
         /// </summary>
-        [Parameter(
-            ParameterSetName = ASRParameterSets.ARSVault,
-            Mandatory = false,
-            ValueFromPipeline = true)]
-        [ValidateSet(AuthType.AAD, AuthType.ACS, AuthType.AzureActiveDirectory, AuthType.AccessControlService)]
-        public String Auth { get; set; }
+        [Parameter(ParameterSetName = ASRParameterSets.ARSVaultACS, Mandatory = true)]
+        public SwitchParameter UseACSAuthentication
+        {
+            get { return useACSAuthentication; }
+            set { useACSAuthentication = value; }
+        }
+        private bool useACSAuthentication;
 
         /// <summary>
         ///     ProcessRecord of the command.
@@ -68,7 +74,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery
                 switch (this.ParameterSetName)
                 {
                     case ASRParameterSets.ARSVault:
-                        this.SetARSVaultContext(this.Vault,this.Auth);
+                        this.SetARSVaultContext(this.Vault,AuthType.AAD);
+                        break;
+                    case ASRParameterSets.ARSVaultACS:
+                        this.SetARSVaultContext(this.Vault, AuthType.ACS);
                         break;
                     default:
                         throw new PSInvalidOperationException(Resources.InvalidParameterSet);
@@ -85,16 +94,22 @@ namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery
             {
                 using (var powerShell = System.Management.Automation.PowerShell.Create())
                 {
-                    if (string.IsNullOrEmpty(authType))
+                    Collection<PSObject> result;
+                    if (string.IsNullOrEmpty(authType) || authType == AuthType.AAD)
                     {
-                        authType = AuthType.AAD;
+                        result = powerShell
+                         .AddCommand("Get-AzureRmRecoveryServicesVaultSettingsFile")
+                         .AddParameter("Vault", arsVault)
+                         .Invoke();
                     }
-                    var result = powerShell
-                        .AddCommand("Get-AzureRmRecoveryServicesVaultSettingsFile")
-                        .AddParameter("Vault", arsVault)
-                        .AddParameter("Auth", authType)
-                        .Invoke();
-
+                    else
+                    {
+                        result = powerShell
+                         .AddCommand("Get-AzureRmRecoveryServicesVaultSettingsFile")
+                         .AddParameter("Vault", arsVault)
+                         .AddParameter("useACSAuthentication", null)
+                         .Invoke();
+                    }
                     var vaultSettingspath = (string)result[0]
                         .Members["FilePath"]
                         .Value;

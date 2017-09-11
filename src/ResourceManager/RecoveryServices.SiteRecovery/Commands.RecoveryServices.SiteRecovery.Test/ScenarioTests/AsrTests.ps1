@@ -491,33 +491,24 @@ Site Recovery New model End to End
 #>
 function Test-VerifyAuth
 {
-	param([string] $DowloadFolder,
-			[string] $DownloadFilePath)
+	param([string] $DowloadFolder)
 
 	$VaultName = "IbizaV2ATest"
     $rgName = "canaryexproute"
 	$Vault = Get-AzureRMRecoveryServicesVault -ResourceGroupName $rgName -Name $VaultName
 
-	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DownloadFilePath -Vault $Vault
+	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Vault $Vault
+	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
+
+	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Vault $Vault -Path .
 	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
 	
-	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Vault $Vault
+	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Vault $Vault -UseACSAuthentication
 	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
-	
-	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Vault $Vault -Auth "ACS"
-	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
-	
-	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Vault $Vault -Auth "AAD" 
-	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
-	
-	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Auth "ACS" -SiteRecovery -Vault $Vault
-	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
-	
-	Get-AzureRmRecoveryServicesVaultSettingsFile -Path $DowloadFolder -Auth "AAD"-SiteRecovery -Vault $Vault
-	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
-	
-	Set-ASRVaultSettings -Vault $Vault
-	Set-AzureRmRecoveryServicesAsrVaultSettings -Vault $Vault -Auth "AAD"
-	Set-AzureRmRecoveryServicesAsrVaultSettings -Vault $Vault -Auth "ACS"
-	
+
+	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Vault $Vault -Path . -UseACSAuthentication
+	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath 
+
+	Set-ASRVaultSettings  -Vault $Vault
+	Set-ASRVaultSettings  -Vault $Vault -UseACSAuthentication
 }

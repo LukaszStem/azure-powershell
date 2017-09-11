@@ -39,6 +39,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.SiteRecovery
         /// </summary>
         internal const string ARSVault = "AzureRecoveryServicesVault";
 
+        /// <summary>
+        ///     Handle ARS Vault.
+        /// </summary>
+        internal const string ARSVaultACS = "AzureRecoveryServicesVaultACS";
+
         /// </summary>
         /// Handle ASR Vault.
         /// </summary>
