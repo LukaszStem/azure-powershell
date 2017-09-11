@@ -181,6 +181,7 @@
     <None Include="SessionRecords\Microsoft.Azure.Commands.SiteRecovery.Test.ScenarioTests.SiteRecoveryTests\VaultCRUDTests.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="SessionRecords\Microsoft.Azure.Commands.SiteRecovery.Test.ScenarioTests.SiteRecoveryTests\VerifyAuth.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Commands.Common.Authentication.Abstractions\Commands.Common.Authentication.Abstractions.csproj">

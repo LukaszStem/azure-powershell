@@ -491,7 +491,7 @@ Site Recovery New model End to End
 #>
 function Test-VerifyAuth
 {
-	param([string] $DowloadFolder)
+	param([string] $vaultSettingsFilePath)
 
 	$VaultName = "IbizaV2ATest"
     $rgName = "canaryexproute"
@@ -500,7 +500,7 @@ function Test-VerifyAuth
 	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Vault $Vault
 	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
 
-	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Vault $Vault -Path .
+	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Vault $Vault -Path "./SessionRecords"
 	Import-AzureRmRecoveryServicesAsrVaultSettingsFile -Path $path.FilePath
 	
 	$path = Get-AzureRmRecoveryServicesVaultSettingsFile -Vault $Vault -UseACSAuthentication

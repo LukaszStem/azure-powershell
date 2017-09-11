@@ -202,8 +202,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices
             }
             else
             {
-                string fullFilePath = string.IsNullOrEmpty(this.Path) ? Utilities.GetDefaultPath() : this.Path;
-                fullFilePath += fileName;
+                this.Path = string.IsNullOrEmpty(this.Path) ? Utilities.GetDefaultPath() : this.Path;
+                string fullFilePath = System.IO.Path.Combine(this.Path,fileName);
                 WriteDebug(string.Format(
                                           CultureInfo.InvariantCulture,
                                           Resources.ExecutingGetVaultCredCmdlet,
